@@ -12,7 +12,6 @@ describe("UnionValidator with real validators", () => {
       numberValidator,
     ]);
     const result = unionValidator.parse("Valid String");
-    console.log("🚀 ~ it ~ result:", result);
 
     expect(result.success).toBe(true);
     if (result.success) expect(result.data).toBe("Valid String");
@@ -38,7 +37,7 @@ describe("UnionValidator with real validators", () => {
 
   it("should stop at the first successful validator and not evaluate further", () => {
     const stringValidator = new StringValidator();
-    const numberValidator = jest.fn(() => new NumberValidator())();
+    const numberValidator = new NumberValidator();
 
     const unionValidator = new UnionValidator([
       stringValidator,
