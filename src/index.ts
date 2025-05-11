@@ -39,21 +39,4 @@ export const surely = {
     new ObjectValidator(props),
 };
 
-export const sboolean = surely.boolean;
-export const snumber = surely.number;
-export const sstring = surely.string;
-export const sdatetime = surely.datetime;
-export const senum = surely.enum;
-export const sunion = surely.union;
-export const sarray = surely.array;
-export const sobject = surely.object;
-export const sbool = surely.bool;
-export const snum = surely.num;
-export const sstr = surely.str;
-export const sdt = surely.dt;
-export const sen = surely.en;
-export const sun = surely.un;
-export const sarr = surely.arr;
-export const sobj = surely.obj;
-
 export const s = surely;
