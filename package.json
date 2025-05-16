@@ -23,7 +23,8 @@
     "dev": "tsc --watch",
     "test": "jest",
     "clean": "rimraf dist",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "publish": "npm publish --access public"
   },
   "repository": {
     "type": "git",
