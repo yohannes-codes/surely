@@ -1,9 +1,13 @@
 export * from "./types/base";
+export * from "./types/patterns";
 export * from "./types/result";
+
 export * from "./validators/boolean";
 export * from "./validators/number";
 export * from "./validators/string";
 export * from "./validators/datetime";
+export * from "./validators/enum";
+export * from "./validators/union";
 export * from "./validators/array";
 export * from "./validators/object";
 
