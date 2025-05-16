@@ -1,6 +1,6 @@
 {
   "name": "@yohannes.codes/surely",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A lightweight validation library with TypeScript support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
