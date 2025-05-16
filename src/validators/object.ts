@@ -1,44 +1,42 @@
 import { BaseValidator } from "../types/base";
 import { Result } from "../types/result";
 
-type ValidatorMap = Record<string, BaseValidator<any>>;
+export class ObjectValidator<
+  T extends Record<string, any>
+> extends BaseValidator<T> {
+  private _schema: { [K in keyof T]: BaseValidator<T[K]> };
 
-export type InferSchema<T extends ValidatorMap> = {
-  [K in keyof T]: T[K] extends BaseValidator<infer U> ? U : never;
-};
-
-export class ObjectValidator<T extends ValidatorMap> extends BaseValidator<
-  InferSchema<T>
-> {
-  private _schema: T;
-
-  constructor(schema: T) {
+  constructor(schema: { [K in keyof T]: BaseValidator<T[K]> }) {
     super();
     this._schema = schema;
   }
 
   pick<K extends keyof T>(keys: K[]): ObjectValidator<Pick<T, K>> {
-    const picked: Partial<T> = {};
+    const picked = {} as { [P in K]: BaseValidator<T[P]> };
     for (const key of keys) {
       picked[key] = this._schema[key];
     }
-    return new ObjectValidator(picked as Pick<T, K>);
+    return new ObjectValidator<Pick<T, K>>(picked);
   }
 
   omit<K extends keyof T>(keys: K[]): ObjectValidator<Omit<T, K>> {
-    const omitted: Partial<T> = { ...this._schema };
+    const omitted: Partial<{ [K in keyof T]: BaseValidator<T[K]> }> = {
+      ...this._schema,
+    };
     for (const key of keys) {
       delete omitted[key];
     }
-    return new ObjectValidator(omitted as Omit<T, K>);
+    return new ObjectValidator<Omit<T, K>>(
+      omitted as { [P in Exclude<keyof T, K>]: BaseValidator<T[P]> }
+    );
   }
 
-  protected _parse(input: { [K in keyof T]?: any }): Result<InferSchema<T>> {
+  protected _parse(input: { [K in keyof T]: any }): Result<T> {
     if (typeof input !== "object" || input === null || Array.isArray(input)) {
       return { success: false, error: "expected an object" } as any;
     }
 
-    const output: InferSchema<T> = {} as any;
+    const output: { [K in keyof T]: T[K] } = {} as any;
     const errors: { [K in keyof T]?: string | string[] } = {};
 
     if (this._strict) {
