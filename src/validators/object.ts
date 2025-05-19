@@ -32,7 +32,7 @@ export class ObjectValidator<
     );
   }
 
-  makeOptional(): this {
+  makeAllOptional(): this {
     this._makeAllOptional = true;
     return this;
   }
