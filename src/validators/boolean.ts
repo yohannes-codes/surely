@@ -2,10 +2,10 @@ import { BaseValidator } from "../types/base";
 import { Result } from "../types/result";
 
 export class BooleanValidator extends BaseValidator<boolean> {
-  protected _true: boolean = false;
-  protected _trueError: string = `value must be true`;
-  protected _false: boolean = false;
-  protected _falseError: string = `value must be false`;
+  private _true: boolean = false;
+  private _trueError: string = `value must be true`;
+  private _false: boolean = false;
+  private _falseError: string = `value must be false`;
 
   constructor() {
     super();

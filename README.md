@@ -95,18 +95,43 @@ tags.parse(["a", "b", "c"]); // ✅
 tags.parse([1, "x"]); // ❌
 ```
 
+```ts
+const threeCharStringValidator = surely
+  .string()
+  .length(3)
+  .regex(/^[1-9][0-9]{2}$/)
+  .or(surely.number().gte(100).lte(999));
+
+const threeDigitNumberValidator = surely.number().gte(100).lte(999);
+
+const enumValidator = surely.enum([
+  threeCharStringValidator,
+  threeDigitNumberValidator,
+]);
+
+const arrayValidatorWithEnum = surely
+  .array()
+  .of(enumValidator)
+  .nonEmpty()
+  .unique();
+
+// Example usage
+arrayValidatorWithEnum.parse(["123", 1234]); // ❌ fails because 1234 is not a valid enum value
+arrayValidatorWithEnum.parse(["123", 123]); // ✅ succeeds because both values match the enum criteria
+```
+
 ---
 
 ## 🔧 API Overview
 
 ### common
 
-| Method                | Description                       |
-| --------------------- | --------------------------------- |
-| `.parse()`            | Runs validation & returns result  |
-| `.optional()`         | Makes the schema optional         |
-| `.default()`          | Sets a default value if undefined |
-| `.customValidation()` | Adds custom validation logic      |
+| Method                | Description                                              |
+| --------------------- | -------------------------------------------------------- |
+| `.parse()`            | Runs validation & returns result                         |
+| `.optional()`         | Makes the schema optional (makes undefined values valid) |
+| `.default()`          | Sets a default value if undefined                        |
+| `.customValidation()` | Adds custom validation logic                             |
 
 ### boolean
 
@@ -210,12 +235,13 @@ tags.parse([1, "x"]); // ❌
 
 ### object
 
-| Method                | Description                                     |
-| --------------------- | ----------------------------------------------- |
-| object()              | Validates if value is an object                 |
-| object().strict()     | Disallows extra fields                          |
-| object().pick(fields) | Picks only the specified fields from the object |
-| object().omit(fields) | Omits the specified fields from the object      |
+| Method                     | Description                                     |
+| -------------------------- | ----------------------------------------------- |
+| object()                   | Validates if value is an object                 |
+| object().strict()          | Disallows extra fields                          |
+| object().makeAllOptional() | Makes all fields optional                       |
+| object().pick(fields)      | Picks only the specified fields from the object |
+| object().omit(fields)      | Omits the specified fields from the object      |
 
 ---
 
@@ -224,8 +250,15 @@ tags.parse([1, "x"]); // ❌
 ```ts
 import { surely, s } from "surely";
 
-s.str(); // alias for s.string()
-s.num(); // alias for s.number()
+s; // alias for surely
+s.bool(); // alias for s.boolean()
+s.num(); // alias for surely.number()
+s.str(); // alias for surely.string()
+s.dt(); // alias for surely.datetime()
+s.en(); // alias for surely.enum()
+s.un(); // alias for surely.union()
+s.arr(); // alias for surely.array()
+s.obj(); // alias for surely.object()
 ```
 
 ---
