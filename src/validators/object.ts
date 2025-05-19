@@ -5,7 +5,7 @@ export class ObjectValidator<
   T extends Record<string, any>
 > extends BaseValidator<T> {
   private _schema: { [K in keyof T]: BaseValidator<T[K]> };
-  private _makeOptional: boolean = false;
+  private _makeAllOptional: boolean = false;
 
   constructor(schema: { [K in keyof T]: BaseValidator<T[K]> }) {
     super();
@@ -33,7 +33,7 @@ export class ObjectValidator<
   }
 
   makeOptional(): this {
-    this._makeOptional = true;
+    this._makeAllOptional = true;
     return this;
   }
 
@@ -66,7 +66,7 @@ export class ObjectValidator<
         continue;
       }
 
-      if (this._makeOptional) validator.optional();
+      if (this._makeAllOptional) validator.optional();
       const result = validator.parse(value);
 
       if (!result.success) {
