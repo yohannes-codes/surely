@@ -1,9 +1,7 @@
 import { BaseValidator } from "../types/base";
 import { Result } from "../types/result";
 
-export class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<
-  T[]
-> {
+export class ArrayValidator<T = any> extends BaseValidator<T[]> {
   private _removeDuplicates: boolean = false;
 
   private _minLength?: number = undefined;
@@ -16,7 +14,7 @@ export class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<
   private _nonEmptyError: string = `value must be a non-empty array`;
   private _unique: boolean = false;
   private _uniqueError: string = `value must be unique`;
-  private _of?: T = undefined;
+  private _of?: BaseValidator<T> = undefined;
   private _ofError: string = `value must be of the specified type & structure`;
 
   constructor() {
@@ -61,7 +59,7 @@ export class ArrayValidator<T extends BaseValidator<any>> extends BaseValidator<
     return this;
   }
 
-  of(value: T, errorMessage?: string): this {
+  of(value: BaseValidator<T>, errorMessage?: string): this {
     this._of = value;
     if (errorMessage) this._ofError = errorMessage;
     return this;
