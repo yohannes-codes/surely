@@ -4,3 +4,13 @@ export * from "./core/types/issue";
 export * from "./core/types/path";
 
 export * from "./core/base";
+export * from "./schemas/boolean";
+
+import { BooleanValidator } from "./schemas/boolean";
+
+export const surely = {
+  boolean: () => new BooleanValidator(),
+  bool: () => new BooleanValidator(),
+};
+
+export const S = surely;
