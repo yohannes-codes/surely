@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+dist/
+*.d.ts
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+logs/*.log
+
+# Jest
+coverage/
+jest-cache/
+jest-config/
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,50 @@
+{
+  "name": "@yohannes.codes/surely",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A lightweight validation library with TypeScript support.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "clean": "rimraf dist",
+    "prepare": "npm run build",
+    "release": "npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yohannes-codes/surely.git"
+  },
+  "keywords": [
+    "validation",
+    "typescript",
+    "library",
+    "schema",
+    "lightweight"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.0.0"
+  },
+  "author": "yohannes.codes",
+  "license": "MIT"
+}
