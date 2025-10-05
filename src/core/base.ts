@@ -1,6 +1,7 @@
 import { SurelyResult } from "./types/result";
 import { SurelyIssue } from "./types/issue";
 import { utils } from "../utils/utils";
+import { SurelyPath } from "./types/path";
 
 export abstract class BaseValidator<T> {
   protected _strict: boolean = false;
@@ -25,12 +26,9 @@ export abstract class BaseValidator<T> {
     (this._postTransformFn = fn), this
   );
 
-  protected abstract _parse(
-    input: any,
-    path: string[] | string
-  ): SurelyResult<T>;
+  protected abstract _parse(input: any, path: SurelyPath): SurelyResult<T>;
 
-  parse(input: any, path: string[] | string = ""): SurelyResult<T> {
+  parse(input: any, path: SurelyPath = ""): SurelyResult<T> {
     if (input === undefined) {
       if (this._default !== undefined) {
         return utils.success(this._default);
@@ -70,7 +68,7 @@ export abstract class BaseValidator<T> {
     return utils.success(output);
   }
 
-  parseAnArray(input: any[], path: string = ""): SurelyResult<T[]> {
+  parseAnArray(input: any[], path: SurelyPath = ""): SurelyResult<T[]> {
     if (!Array.isArray(input)) {
       return {
         success: false,
@@ -99,7 +97,7 @@ export abstract class BaseValidator<T> {
 
   parseARecord<R extends Record<string, any>>(
     input: R,
-    path: string = "self"
+    path: SurelyPath = "self"
   ): SurelyResult<Record<string, T>> {
     if (!utils.isObject(input)) {
       return {

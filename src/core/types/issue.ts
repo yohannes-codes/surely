@@ -1,5 +1,7 @@
+import { SurelyPath } from "./path";
+
 export type SurelyIssue = {
-  path: string[] | string;
+  path: SurelyPath;
   message: string;
   value?: any;
 };
