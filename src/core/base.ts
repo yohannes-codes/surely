@@ -1,6 +1,7 @@
 import { SurelyResult } from "./types/result";
 import { SurelyIssue } from "./types/issue";
 import { utils } from "../utils/utils";
+import { respond } from "../utils/respond";
 
 export abstract class BaseValidator<T> {
   protected _strict: boolean = false;
@@ -30,17 +31,11 @@ export abstract class BaseValidator<T> {
   parse(input: any, path: string = ""): SurelyResult<T> {
     if (input === undefined) {
       if (this._default !== undefined) {
-        return utils.success(this._default);
+        return respond.success(this._default);
       } else if (this._optional) {
-        return utils.success(undefined as T);
+        return respond.success(undefined as T);
       } else {
-        return utils.failure([
-          {
-            path: path,
-            message: `[required] Expected real/defined value, but received nothing.`,
-            value: input,
-          },
-        ]);
+        return respond.error.required(path);
       }
     }
 
@@ -64,65 +59,56 @@ export abstract class BaseValidator<T> {
 
     if (this._postTransformFn) output = this._postTransformFn(output);
 
-    return utils.success(output);
+    return respond.success(output);
   }
 
   parseAnArray(input: any[], path: string = ""): SurelyResult<T[]> {
-    if (!Array.isArray(input)) {
-      return {
-        success: false,
-        issues: [
-          {
-            path: path,
-            message: `[type] Expected an array, but received ${typeof input}`,
-            value: input,
-          },
-        ],
-      };
-    }
+    if (!Array.isArray(input)) return respond.error.type(path, "array", input);
 
     const output: T[] = [];
     const issues: SurelyIssue[] = [];
 
     for (let i = 0; i < input.length; i++) {
-      const result = this.parse(input[i], utils.makePath(path, `${i}`));
+      const result = this.parse(input[i], utils.makePath(path, String(i)));
       if (result.success) output.push(result.data);
       else issues.push(...result.issues);
     }
 
-    if (issues.length > 0) return { success: false, issues: issues };
-    else return { success: true, data: output };
+    if (issues.length > 0)
+      return respond.error.subIssues(
+        `[array] One or more issues found in array elements.`,
+        input,
+        path,
+        issues
+      );
+    else return respond.success(output);
   }
 
   parseARecord<R extends Record<string, any>>(
     input: R,
     path: string = "self"
   ): SurelyResult<Record<string, T>> {
-    if (!utils.isObject(input)) {
-      return {
-        success: false,
-        issues: [
-          {
-            path: path,
-            message: `[type] Expected a record/object, but received ${typeof input}`,
-            value: input,
-          },
-        ],
-      };
-    }
+    if (!utils.isObject(input))
+      return respond.error.type(path, "object", input);
 
     const output = {} as Record<keyof R, T>;
     const issues: SurelyIssue[] = [];
 
     for (const key in input) {
-      const result = this.parse(input[key], utils.makePath(path, key));
+      const result = this.parse(input[key], utils.makePath(path, String(key)));
 
       if (result.success) output[key] = result.data;
       else issues.push(...result.issues);
     }
 
-    if (issues.length > 0) return { success: false, issues: issues };
-    else return { success: true, data: output };
+    if (issues.length > 0)
+      return respond.error.subIssues(
+        `[record] One or more issues found in record properties.`,
+        input,
+        path,
+        issues
+      );
+    else return respond.success(output);
   }
 
   validate(input: any): boolean {
