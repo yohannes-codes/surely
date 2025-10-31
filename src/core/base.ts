@@ -13,6 +13,13 @@ export abstract class BaseValidator<T> {
 
   constructor() {}
 
+  get defaultValue(): any {
+    return this._default;
+  }
+  get isOptional(): boolean {
+    return this._optional;
+  }
+
   strict = (): this => ((this._strict = true), this);
   default = (value: any): this => ((this._default = value), this);
   optional = (): this => ((this._optional = true), this);
