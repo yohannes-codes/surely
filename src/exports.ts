@@ -2,15 +2,18 @@
 export * from "./core/types/result";
 export * from "./core/types/issue";
 export * from "./utils/patterns";
+export * from "./core/types/temporal";
 
 export * from "./core/base";
 export * from "./schemas/boolean";
 export * from "./schemas/number";
 export * from "./schemas/string";
+export * from "./schemas/date";
 
 import { BooleanValidator } from "./schemas/boolean";
 import { NumberValidator } from "./schemas/number";
 import { StringValidator } from "./schemas/string";
+import { DateValidator } from "./schemas/date";
 
 export const surely = {
   boolean: () => new BooleanValidator(),
@@ -19,6 +22,8 @@ export const surely = {
   num: () => new NumberValidator(),
   string: () => new StringValidator(),
   str: () => new StringValidator(),
+  date: () => new DateValidator(),
+  dt: () => new DateValidator(),
 };
 
 export const S = surely;
