@@ -10,12 +10,15 @@ export * from "./schemas/number";
 export * from "./schemas/string";
 export * from "./schemas/date";
 export * from "./schemas/enum";
+export * from "./schemas/object";
 
+import { BaseValidator } from "./core/base";
 import { BooleanValidator } from "./schemas/boolean";
 import { NumberValidator } from "./schemas/number";
 import { StringValidator } from "./schemas/string";
 import { DateValidator } from "./schemas/date";
 import { EnumValidator } from "./schemas/enum";
+import { ObjectValidator } from "./schemas/object";
 
 export const surely = {
   boolean: () => new BooleanValidator(),
@@ -31,6 +34,14 @@ export const surely = {
   >(
     options: T
   ) => new EnumValidator(options),
+  object: <S extends Record<string, BaseValidator<any>>>(schema: S) =>
+    new ObjectValidator<{
+      [K in keyof S]: S[K] extends BaseValidator<infer U> ? U : never;
+    }>(schema),
+  obj: <S extends Record<string, BaseValidator<any>>>(schema: S) =>
+    new ObjectValidator<{
+      [K in keyof S]: S[K] extends BaseValidator<infer U> ? U : never;
+    }>(schema),
 };
 
 export const S = surely;
