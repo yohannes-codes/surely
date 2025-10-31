@@ -20,4 +20,6 @@ function failure(issues: SurelyIssue[]): {
   return { success: false, issues: issues };
 }
 
-export const utils = { isObject, success, failure };
+const makePath = (p: string, key: string) => (p ? `${p}.${key}` : key);
+
+export const utils = { isObject, success, failure, makePath };

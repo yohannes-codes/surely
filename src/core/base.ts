@@ -1,7 +1,6 @@
 import { SurelyResult } from "./types/result";
 import { SurelyIssue } from "./types/issue";
 import { utils } from "../utils/utils";
-import { SurelyPath } from "./types/path";
 
 export abstract class BaseValidator<T> {
   protected _strict: boolean = false;
@@ -26,9 +25,9 @@ export abstract class BaseValidator<T> {
     (this._postTransformFn = fn), this
   );
 
-  protected abstract _parse(input: any, path: SurelyPath): SurelyResult<T>;
+  protected abstract _parse(input: any, path: string): SurelyResult<T>;
 
-  parse(input: any, path: SurelyPath = ""): SurelyResult<T> {
+  parse(input: any, path: string = ""): SurelyResult<T> {
     if (input === undefined) {
       if (this._default !== undefined) {
         return utils.success(this._default);
@@ -68,7 +67,7 @@ export abstract class BaseValidator<T> {
     return utils.success(output);
   }
 
-  parseAnArray(input: any[], path: SurelyPath = ""): SurelyResult<T[]> {
+  parseAnArray(input: any[], path: string = ""): SurelyResult<T[]> {
     if (!Array.isArray(input)) {
       return {
         success: false,
@@ -86,7 +85,7 @@ export abstract class BaseValidator<T> {
     const issues: SurelyIssue[] = [];
 
     for (let i = 0; i < input.length; i++) {
-      const result = this.parse(input[i], [path, `${i}`]);
+      const result = this.parse(input[i], utils.makePath(path, `${i}`));
       if (result.success) output.push(result.data);
       else issues.push(...result.issues);
     }
@@ -97,7 +96,7 @@ export abstract class BaseValidator<T> {
 
   parseARecord<R extends Record<string, any>>(
     input: R,
-    path: SurelyPath = "self"
+    path: string = "self"
   ): SurelyResult<Record<string, T>> {
     if (!utils.isObject(input)) {
       return {
@@ -116,7 +115,7 @@ export abstract class BaseValidator<T> {
     const issues: SurelyIssue[] = [];
 
     for (const key in input) {
-      const result = this.parse(input[key], [path, key]);
+      const result = this.parse(input[key], utils.makePath(path, key));
 
       if (result.success) output[key] = result.data;
       else issues.push(...result.issues);
