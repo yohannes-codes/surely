@@ -3,11 +3,10 @@ import { SurelyResult } from "../core/types/result";
 import { respond } from "../utils/respond";
 
 export class BooleanValidator extends BaseValidator<boolean> {
-  _truthy?: boolean;
-  _falsy?: boolean;
+  _truthy?: boolean = undefined;
 
   truthy = (): this => ((this._truthy = true), this);
-  falsy = (): this => ((this._falsy = true), this);
+  falsy = (): this => ((this._truthy = false), this);
 
   constructor() {
     super();
@@ -60,20 +59,22 @@ export class BooleanValidator extends BaseValidator<boolean> {
       }
     }
 
-    if (this._truthy && !output) {
-      return respond.error.generic(
-        `[truthy] Expected truthy value, but received falsy value`,
-        path,
-        input
-      );
-    }
+    if (this._truthy !== undefined) {
+      if (this._truthy === true && !output) {
+        return respond.error.generic(
+          `[truthy] Expected truthy value, but received falsy value`,
+          path,
+          input
+        );
+      }
 
-    if (this._falsy && output) {
-      return respond.error.generic(
-        `[falsy] Expected falsy value, but received truthy value`,
-        path,
-        input
-      );
+      if (this._truthy === false && output) {
+        return respond.error.generic(
+          `[falsy] Expected falsy value, but received truthy value`,
+          path,
+          input
+        );
+      }
     }
 
     return respond.success(output);
