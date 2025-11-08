@@ -10,6 +10,8 @@ import { SurelyResult } from "../exports";
 import { respond } from "../utils/respond";
 
 export class DateValidator extends BaseValidator<Date> {
+  _type!: Date;
+
   private _add?: DateOffset = undefined;
   private _before?: Date;
   private _after?: Date;

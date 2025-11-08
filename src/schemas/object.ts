@@ -6,6 +6,8 @@ import { utils } from "../utils/utils";
 export class ObjectValidator<
   T extends Record<string, any>
 > extends BaseValidator<T> {
+  _type!: T;
+
   private _schema: { [K in keyof T]: BaseValidator<T[K]> };
   private _makeAllOptional: boolean = false;
 

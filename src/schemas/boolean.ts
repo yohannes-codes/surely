@@ -3,6 +3,8 @@ import { SurelyResult } from "../core/types/result";
 import { respond } from "../utils/respond";
 
 export class BooleanValidator extends BaseValidator<boolean> {
+  _type!: boolean;
+
   _truthy?: boolean = undefined;
 
   truthy = (): this => ((this._truthy = true), this);

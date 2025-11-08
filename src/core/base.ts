@@ -4,6 +4,8 @@ import { utils } from "../utils/utils";
 import { respond } from "../utils/respond";
 
 export abstract class BaseValidator<T> {
+  abstract _type: T;
+
   protected _strict: boolean = false;
   protected _default: any = undefined;
   protected _optional: boolean = false;
@@ -130,3 +132,5 @@ export abstract class BaseValidator<T> {
     return this.parseARecord(input).success;
   }
 }
+
+export type Infer<T extends BaseValidator<any>> = T["_type"];

@@ -3,6 +3,8 @@ import { SurelyResult } from "../exports";
 import { respond } from "../utils/respond";
 
 export class NumberValidator extends BaseValidator<number> {
+  _type!: number;
+
   private _roundMode?: "round" | "ceil" | "floor" = undefined;
   private _clamp?: [number, number] = undefined;
 
@@ -10,7 +12,7 @@ export class NumberValidator extends BaseValidator<number> {
   private _gt?: number = undefined;
   private _lte?: number = undefined;
   private _gte?: number = undefined;
-  private _type?: "integer" | "float" = undefined;
+  private _numberType?: "integer" | "float" = undefined;
   private _polarity?: "positive" | "negative" = undefined;
   private _finite?: boolean = undefined;
   private _parity?: "even" | "odd" = undefined;
@@ -34,8 +36,8 @@ export class NumberValidator extends BaseValidator<number> {
   range = (min: number, max: number): this => (
     (this._gte = min), (this._lte = max), this
   );
-  int = (): this => ((this._type = "integer"), this);
-  float = (): this => ((this._type = "float"), this);
+  int = (): this => ((this._numberType = "integer"), this);
+  float = (): this => ((this._numberType = "float"), this);
   positive = (): this => ((this._polarity = "positive"), this);
   negative = (): this => ((this._polarity = "negative"), this);
   finite = (state: boolean = true): this => ((this._finite = state), this);
@@ -61,10 +63,10 @@ export class NumberValidator extends BaseValidator<number> {
       output = Math.min(Math.max(output, min), max);
     }
 
-    if (this._type === "integer" && !Number.isInteger(output)) {
+    if (this._numberType === "integer" && !Number.isInteger(output)) {
       return respond.error.type("integer", output, path);
     }
-    if (this._type === "float" && Number.isInteger(output)) {
+    if (this._numberType === "float" && Number.isInteger(output)) {
       return respond.error.type("float", output, path);
     }
     if (this._polarity === "positive" && !(output > 0)) {

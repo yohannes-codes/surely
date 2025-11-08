@@ -9,6 +9,8 @@ type UnionOfValidators<T extends readonly BaseValidator<any>[]> =
 export class UnionValidator<
   T extends readonly BaseValidator<any>[]
 > extends BaseValidator<UnionOfValidators<T>> {
+  _type!: UnionOfValidators<T>;
+
   constructor(private _validators: T) {
     super();
   }

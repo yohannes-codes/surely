@@ -3,6 +3,8 @@ import { patterns, SurelyResult } from "../exports";
 import { respond } from "../utils/respond";
 
 export class StringValidator extends BaseValidator<string> {
+  _type!: string;
+
   private _trim?: boolean = undefined;
   private _casing?: "upper" | "lower" | "title" = undefined;
   private _prefix?: string = undefined;

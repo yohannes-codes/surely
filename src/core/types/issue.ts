@@ -1,4 +1,3 @@
-
 export type SurelyIssue = {
   path: string;
   message: string;
