@@ -14,6 +14,10 @@ export class ObjectValidator<
     this._schema = schema;
   }
 
+  get schemaKeys(): (keyof T)[] {
+    return Object.keys(this._schema) as (keyof T)[];
+  }
+
   pick<K extends keyof T>(keys: K[]): ObjectValidator<Pick<T, K>> {
     const picked = {} as { [P in K]: BaseValidator<T[P]> };
     for (const key of keys) {
