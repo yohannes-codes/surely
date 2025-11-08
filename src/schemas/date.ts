@@ -79,12 +79,12 @@ export class DateValidator extends BaseValidator<Date> {
     }
     if (this._daysFromNow !== undefined) {
       const target = new Date();
-      target.setDate(target.getDate() + this._daysFromNow);
+      target.setUTCDate(target.getUTCDate() + this._daysFromNow);
 
       if (
-        target.getFullYear() !== output.getFullYear() ||
-        target.getMonth() !== output.getMonth() ||
-        target.getDate() !== output.getDate()
+        target.getUTCFullYear() !== output.getUTCFullYear() ||
+        target.getUTCMonth() !== output.getUTCMonth() ||
+        target.getUTCDate() !== output.getUTCDate()
       ) {
         return respond.error.generic(
           `Expected the date to be ${
@@ -100,7 +100,7 @@ export class DateValidator extends BaseValidator<Date> {
       }
     }
     if (this._dateParts.day !== undefined) {
-      const jsDay = output.getDay() === 0 ? 7 : output.getDay();
+      const jsDay = output.getUTCDay() === 0 ? 7 : output.getUTCDay();
       if (jsDay !== this._dateParts.day) {
         return respond.error.generic(
           `Expected the day of the week to be ${this._dateParts.day}, but received ${jsDay}`,
@@ -111,23 +111,23 @@ export class DateValidator extends BaseValidator<Date> {
     }
     if (
       this._dateParts.date !== undefined &&
-      output.getDate() !== this._dateParts.date
+      output.getUTCDate() !== this._dateParts.date
     ) {
       return respond.error.generic(
         `Expected the date to be ${
           this._dateParts.date
-        }, but received ${output.getDate()}`,
+        }, but received ${output.getUTCDate()}`,
         output,
         path
       );
     }
     if (
       this._dateParts.month !== undefined &&
-      output.getMonth() + 1 !== this._dateParts.month
+      output.getUTCMonth() + 1 !== this._dateParts.month
     ) {
       return respond.error.generic(
         `Expected the month to be ${this._dateParts.month}, but received ${
-          output.getMonth() + 1
+          output.getUTCMonth() + 1
         }`,
         output,
         path
@@ -135,12 +135,12 @@ export class DateValidator extends BaseValidator<Date> {
     }
     if (
       this._dateParts.year !== undefined &&
-      output.getFullYear() !== this._dateParts.year
+      output.getUTCFullYear() !== this._dateParts.year
     ) {
       return respond.error.generic(
         `Expected the year to be ${
           this._dateParts.year
-        }, but received ${output.getFullYear()}`,
+        }, but received ${output.getUTCFullYear()}`,
         output,
         path
       );
