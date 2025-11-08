@@ -31,11 +31,8 @@ export const surely = {
   str: () => new StringValidator(),
   date: () => new DateValidator(),
   dt: () => new DateValidator(),
-  enum: <
-    T extends readonly (string | number)[] | Record<string, string | number>
-  >(
-    options: T
-  ) => new EnumValidator(options),
+  enum: <T extends Record<string, string | number>>(options: T) =>
+    new EnumValidator(options),
   object: <S extends Record<string, BaseValidator<any>>>(schema: S) =>
     new ObjectValidator<{
       [K in keyof S]: S[K] extends BaseValidator<infer U> ? U : never;
