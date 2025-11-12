@@ -6,73 +6,59 @@ import { respond } from "../utils/respond";
 export abstract class BaseValidator<T> {
   abstract _type: T;
 
-  protected _strict: boolean = false;
+  protected _strict: boolean = true;
   protected _default: any = undefined;
-  protected _optional: boolean = false;
-  protected _preTransformFn?: (value: any) => T | any = undefined;
-  protected _postTransformFn?: (value: any) => T | any = undefined;
-  protected _customValidationFn?: <T>(value: T) => SurelyResult<T> = undefined;
+  protected _beforeFn?: (value: any) => T | any = undefined;
+  protected _afterFn?: (value: any) => T | any = undefined;
+  protected _custom?: (value: T) => SurelyResult<T>;
 
   constructor() {}
 
-  get defaultValue(): any {
-    return this._default;
-  }
-  get isOptional(): boolean {
-    return this._optional;
-  }
-
-  strict = (): this => ((this._strict = true), this);
+  coerce = (): this => ((this._strict = false), this);
   default = (value: any): this => ((this._default = value), this);
-  optional = (): this => ((this._optional = true), this);
-  customValidationFn = (fn: <T>(value: T) => SurelyResult<T>): this => (
-    (this._customValidationFn = fn), this
+  optional = () => new OptionalValidator(this);
+  customFn = (fn: (value: T) => SurelyResult<T>) => ((this._custom = fn), this);
+
+  beforeFn = (fn: (value: any) => T | any): this => (
+    (this._beforeFn = fn), this
   );
-  preTransform = (fn: (value: any) => T | any): this => (
-    (this._preTransformFn = fn), this
-  );
-  postTransform = (fn: (value: any) => T | any): this => (
-    (this._postTransformFn = fn), this
-  );
+  afterFn = (fn: (value: any) => T | any): this => ((this._afterFn = fn), this);
+
+  clone(): this {
+    return Object.assign(Object.create(this.constructor.prototype), this);
+  }
 
   protected abstract _parse(input: any, path: string): SurelyResult<T>;
 
   parse(input: any, path: string = ""): SurelyResult<T> {
-    if (input === undefined) {
-      if (this._default !== undefined) {
-        return respond.success(this._default);
-      } else if (this._optional) {
-        return respond.success(undefined as T);
-      } else {
-        return respond.error.required(path);
-      }
-    }
+    if (input === undefined)
+      if (this._default !== undefined)
+        return respond.success(this._default as T);
+      else return respond.error.required(path);
 
     let output: any = input;
 
-    if (this._preTransformFn) output = this._preTransformFn(output);
+    if (this._beforeFn) output = this._beforeFn(output);
 
     const innerParsingResult = this._parse(output, path);
 
     if (!innerParsingResult.success) return innerParsingResult;
     else output = innerParsingResult.data;
 
-    if (this._customValidationFn) {
-      const customValidationResult = this._customValidationFn(
-        innerParsingResult.data
-      );
+    if (this._custom) {
+      const customValidationResult = this._custom(innerParsingResult.data);
 
       if (!customValidationResult.success) return customValidationResult;
       else output = customValidationResult.data;
     }
 
-    if (this._postTransformFn) output = this._postTransformFn(output);
+    if (this._afterFn) output = this._afterFn(output);
 
     return respond.success(output);
   }
 
   parseAnArray(input: any[], path: string = ""): SurelyResult<T[]> {
-    if (!Array.isArray(input)) return respond.error.type(path, "array", input);
+    if (!Array.isArray(input)) return respond.error.type("array", path, input);
 
     const output: T[] = [];
     const issues: SurelyIssue[] = [];
@@ -120,17 +106,29 @@ export abstract class BaseValidator<T> {
     else return respond.success(output);
   }
 
-  validate(input: any): boolean {
-    return this.parse(input).success;
-  }
+  validate = (input: any) => this.parse(input).success;
 
-  validateAnArray(input: any[]): boolean {
-    return this.parseAnArray(input).success;
-  }
+  validateAnArray = (input: any[]) => this.parseAnArray(input).success;
 
-  validateARecord<R extends Record<string, any>>(input: R): boolean {
-    return this.parseARecord(input).success;
-  }
+  validateARecord = <R extends Record<string, any>>(input: R) =>
+    this.parseARecord(input).success;
 }
 
 export type Infer<T extends BaseValidator<any>> = T["_type"];
+
+export class OptionalValidator<T> extends BaseValidator<T | undefined> {
+  _type!: T | undefined;
+  private _inner: BaseValidator<T>;
+
+  constructor(inner: BaseValidator<T>) {
+    super();
+    this._inner = inner;
+  }
+
+  parse(input: any, path = ""): SurelyResult<T | undefined> {
+    if (input === undefined || input === null)
+      return respond.success(undefined);
+    else return this._inner.parse(input, path);
+  }
+  protected _parse = (input: any, path = "") => this._inner.parse(input, path);
+}
