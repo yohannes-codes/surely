@@ -2,28 +2,24 @@
   "name": "@yohannes.codes/surely",
   "version": "0.1.0",
   "type": "module",
-  "description": "A lightweight validation library with TypeScript support.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Surely — a modern, lightweight TypeScript validation library for building expressive, type-safe schemas with zero runtime dependencies.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "jest",
     "clean": "rimraf dist",
+    "test": "jest --runInBand --detectOpenHandles --verbose --passWithNoTests",
     "prepare": "npm run build",
     "release": "npm publish --access public"
   },
@@ -32,19 +28,31 @@
     "url": "https://github.com/yohannes-codes/surely.git"
   },
   "keywords": [
+    "surely",
     "validation",
     "typescript",
-    "library",
     "schema",
+    "library",
+    "runtime-validation",
+    "zod-alternative",
+    "type-safe",
     "lightweight"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
-    "ts-jest": "^29.3.2",
     "rimraf": "^6.0.1",
-    "typescript": "^5.0.0"
+    "ts-jest": "^29.3.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.6.3"
   },
-  "author": "yohannes.codes",
-  "license": "MIT"
+  "author": "Yohannes Tesfay Niguse <yohannes.codes>",
+  "license": "MIT",
+  "homepage": "https://github.com/yohannes-codes/surely#readme",
+  "bugs": {
+    "url": "https://github.com/yohannes-codes/surely/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }

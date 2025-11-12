@@ -1,5 +1,6 @@
 import { BaseValidator } from "../core/base";
-import { patterns, SurelyResult } from "../exports";
+import { SurelyResult } from "../core/types/result";
+import { patterns } from "../utils/patterns";
 import { respond } from "../utils/respond";
 
 export class StringValidator extends BaseValidator<string> {
@@ -85,10 +86,7 @@ export class StringValidator extends BaseValidator<string> {
     if (this._suffix) output = output + this._suffix;
     if (this._replace.length) {
       for (const [searchValue, replaceValue] of this._replace) {
-        output =
-          searchValue instanceof RegExp
-            ? output.replace(searchValue, replaceValue)
-            : output.replaceAll(searchValue, replaceValue);
+        output = output.replace(searchValue, replaceValue);
       }
     }
 

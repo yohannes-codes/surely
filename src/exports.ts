@@ -10,6 +10,7 @@ export * from "./schemas/number";
 export * from "./schemas/string";
 export * from "./schemas/date";
 export * from "./schemas/enum";
+export * from "./schemas/native_enum";
 export * from "./schemas/object";
 export * from "./schemas/union";
 
@@ -19,6 +20,7 @@ import { NumberValidator } from "./schemas/number";
 import { StringValidator } from "./schemas/string";
 import { DateValidator } from "./schemas/date";
 import { EnumValidator } from "./schemas/enum";
+import { NativeEnumValidator } from "./schemas/native_enum";
 import { ObjectValidator } from "./schemas/object";
 import { UnionValidator } from "./schemas/union";
 
@@ -31,8 +33,10 @@ export const surely = {
   str: () => new StringValidator(),
   date: () => new DateValidator(),
   dt: () => new DateValidator(),
-  enum: <T extends Record<string, string | number>>(options: T) =>
+  enum: <T extends readonly (string | number)[]>(options: T) =>
     new EnumValidator(options),
+  nativeEnum: <T extends Record<string, string | number>>(options: T) =>
+    new NativeEnumValidator(options),
   object: <S extends Record<string, BaseValidator<any>>>(schema: S) =>
     new ObjectValidator<{
       [K in keyof S]: S[K] extends BaseValidator<infer U> ? U : never;

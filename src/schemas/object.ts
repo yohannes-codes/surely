@@ -1,5 +1,6 @@
 import { BaseValidator } from "../core/base";
-import { SurelyIssue, SurelyResult } from "../exports";
+import { SurelyResult } from "../core/types/result";
+import { SurelyIssue } from "../core/types/issue";
 import { respond } from "../utils/respond";
 import { utils } from "../utils/utils";
 
@@ -7,12 +8,18 @@ export class ObjectValidator<
   T extends Record<string, any>
 > extends BaseValidator<T> {
   _type!: T;
-
   private _schema: { [K in keyof T]: BaseValidator<T[K]> };
-  private _makeAllOptional: boolean = false;
+  private _allowExtraKeys = false;
 
   constructor(schema: { [K in keyof T]: BaseValidator<T[K]> }) {
     super();
+
+    if (Object.values(schema).some((v) => !(v instanceof BaseValidator))) {
+      throw new Error(
+        "[Invalid schema] Expected valid BaseValidator instances in schema."
+      );
+    }
+
     this._schema = schema;
   }
 
@@ -20,32 +27,41 @@ export class ObjectValidator<
     return Object.keys(this._schema) as (keyof T)[];
   }
 
+  loose(): this {
+    this._allowExtraKeys = true;
+    return this;
+  }
+
+  strict(): this {
+    this._allowExtraKeys = false;
+    return this;
+  }
+
   pick<K extends keyof T>(keys: K[]): ObjectValidator<Pick<T, K>> {
     const picked = {} as { [P in K]: BaseValidator<T[P]> };
-    for (const key of keys) {
-      picked[key] = this._schema[key];
-    }
+    for (const k of keys) picked[k] = this._schema[k];
     return new ObjectValidator<Pick<T, K>>(picked);
   }
 
   omit<K extends keyof T>(keys: K[]): ObjectValidator<Omit<T, K>> {
-    const omitted: Partial<{ [K in keyof T]: BaseValidator<T[K]> }> = {
-      ...this._schema,
-    };
-    for (const key of keys) {
-      delete omitted[key];
-    }
+    const clone = { ...this._schema };
+    for (const k of keys) delete clone[k];
     return new ObjectValidator<Omit<T, K>>(
-      omitted as { [P in Exclude<keyof T, K>]: BaseValidator<T[P]> }
+      clone as { [P in Exclude<keyof T, K>]: BaseValidator<T[P]> }
     );
   }
 
-  makeAllOptional = (): this => ((this._makeAllOptional = true), this);
+  asPartial(): ObjectValidator<Partial<T>> {
+    const partialSchema = {} as {
+      [K in keyof Partial<T>]: BaseValidator<Partial<T>[K]>;
+    };
+    for (const k of this.schemaKeys) {
+      partialSchema[k] = this._schema[k].optional();
+    }
+    return new ObjectValidator(partialSchema as any);
+  }
 
-  protected _parse(
-    input: Partial<Record<keyof T, any>>,
-    path: string = ""
-  ): SurelyResult<T> {
+  protected _parse(input: unknown, path: string = ""): SurelyResult<T> {
     if (
       typeof input !== "object" ||
       input === null ||
@@ -55,54 +71,38 @@ export class ObjectValidator<
       return respond.error.type("object", input, path);
     }
 
-    const output: { [K in keyof T]?: T[K] } = {};
+    const obj = input as Record<string, any>;
+    const output: Record<string, any> = {};
     const issues: SurelyIssue[] = [];
 
-    if (this._strict) {
-      const inputKeys = Object.keys(input) as (keyof T)[];
-      const schemaKeys = Object.keys(this._schema) as (keyof T)[];
-      const extraKeys = inputKeys.filter((key) => !schemaKeys.includes(key));
+    for (const key of this.schemaKeys) {
+      const validator = this._schema[key];
+      const subPath = utils.makePath(path, String(key));
+      const result = validator.parse(obj[key as string], subPath);
+      if (!result.success) issues.push(...result.issues);
+      else if (result.data !== undefined) output[key as string] = result.data;
+    }
 
-      if (extraKeys.length)
+    const extraKeys = Object.keys(obj).filter(
+      (k) => !this.schemaKeys.includes(k as keyof T)
+    );
+
+    if (extraKeys.length) {
+      if (this._allowExtraKeys) {
+        for (const k of extraKeys) output[k] = obj[k];
+      } else {
         issues.push({
-          message: `[strict] Unexpected keys: ${extraKeys
-            .map((k) => `"${String(k)}"`)
+          message: `[object.strict] Unexpected keys: ${extraKeys
+            .map((k) => `"${k}"`)
             .join(", ")}`,
           path,
         });
-    }
-    if (issues.length)
-      return respond.error.subIssues(
-        `[object] Object validation failed with ${issues.length} issue(s).`,
-        input,
-        path,
-        issues
-      );
-
-    for (const key in this._schema) {
-      const validator = this._schema[key];
-      const subPath = utils.makePath(path, String(key));
-
-      if (!(validator instanceof BaseValidator)) {
-        issues.push({
-          message: `[schema] Invalid schema for key "${key}". Expected a validator instance.`,
-          path: subPath,
-        });
-
-        continue;
       }
-
-      if (this._makeAllOptional) validator.optional();
-
-      const result = validator.parse(input[key], subPath);
-
-      if (!result.success) issues.push(...result.issues);
-      else output[key] = result.data;
     }
 
-    return issues.length > 0
+    return issues.length
       ? respond.error.subIssues(
-          `[object] Object validation failed with ${issues.length} issue(s).`,
+          `[object] Validation failed with ${issues.length} issue(s).`,
           input,
           path,
           issues

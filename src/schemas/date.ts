@@ -6,7 +6,7 @@ import {
   DayEnum,
   MonthEnum,
 } from "../core/types/temporal";
-import { SurelyResult } from "../exports";
+import { SurelyResult } from "../core/types/result";
 import { respond } from "../utils/respond";
 
 export class DateValidator extends BaseValidator<Date> {

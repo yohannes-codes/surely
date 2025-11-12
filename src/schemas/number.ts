@@ -1,5 +1,5 @@
 import { BaseValidator } from "../core/base";
-import { SurelyResult } from "../exports";
+import { SurelyResult } from "../core/types/result";
 import { respond } from "../utils/respond";
 
 export class NumberValidator extends BaseValidator<number> {
