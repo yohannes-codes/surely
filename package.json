@@ -1,6 +1,6 @@
 {
   "name": "@yohannes.codes/surely",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Surely — a modern, lightweight TypeScript validation library for building expressive, type-safe schemas with zero runtime dependencies.",
   "main": "./dist/index.js",
@@ -21,7 +21,8 @@
     "clean": "rimraf dist",
     "test": "jest --runInBand --detectOpenHandles --verbose --passWithNoTests",
     "prepare": "npm run build",
-    "release": "npm publish --access public"
+    "release": "npm publish --access public",
+    "publish": "npm publish --access public"
   },
   "repository": {
     "type": "git",
