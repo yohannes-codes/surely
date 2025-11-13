@@ -114,8 +114,6 @@ export abstract class BaseValidator<T> {
     this.parseARecord(input).success;
 }
 
-export type Infer<T extends BaseValidator<any>> = T["_type"];
-
 export class OptionalValidator<T> extends BaseValidator<T | undefined> {
   _type!: T | undefined;
   private _inner: BaseValidator<T>;

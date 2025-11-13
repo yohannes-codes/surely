@@ -1,4 +1,4 @@
-import { SurelyIssue } from "../exports";
+import { SurelyIssue } from "..";
 import { utils } from "./utils";
 
 export const respond = {
