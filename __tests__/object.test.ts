@@ -2,7 +2,6 @@ import { ObjectValidator } from "../src/schemas/object";
 import { NumberValidator } from "../src/schemas/number";
 import { StringValidator } from "../src/schemas/string";
 import { BooleanValidator } from "../src/schemas/boolean";
-import { Infer } from "../src/exports";
 
 describe("ObjectValidator", () => {
   const schema = new ObjectValidator({
