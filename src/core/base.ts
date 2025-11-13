@@ -17,6 +17,7 @@ export abstract class BaseValidator<T> {
   coerce = (): this => ((this._strict = false), this);
   default = (value: any): this => ((this._default = value), this);
   optional = () => new OptionalValidator(this);
+  nullable = () => new NullableValidator(this);
   customFn = (fn: (value: T) => SurelyResult<T>) => ((this._custom = fn), this);
 
   beforeFn = (fn: (value: any) => T | any): this => (
@@ -128,5 +129,22 @@ export class OptionalValidator<T> extends BaseValidator<T | undefined> {
       return respond.success(undefined);
     else return this._inner.parse(input, path);
   }
+  protected _parse = (input: any, path = "") => this._inner.parse(input, path);
+}
+
+export class NullableValidator<T> extends BaseValidator<T | null> {
+  _type!: T | null;
+  private _inner: BaseValidator<T>;
+
+  constructor(inner: BaseValidator<T>) {
+    super();
+    this._inner = inner;
+  }
+
+  parse(input: any, path = ""): SurelyResult<T | null> {
+    if (input === null) return respond.success(null);
+    return this._inner.parse(input, path);
+  }
+
   protected _parse = (input: any, path = "") => this._inner.parse(input, path);
 }
