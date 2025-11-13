@@ -1,18 +1,24 @@
 // core types
-export * from "./core/types/result";
-export * from "./core/types/issue";
-export * from "./utils/patterns";
-export * from "./core/types/temporal";
+export type { SurelyResult } from "./core/types/result";
+export type { SurelyIssue } from "./core/types/issue";
+export type { patterns } from "./utils/patterns";
+export type {
+  DayEnum,
+  DateEnum,
+  MonthEnum,
+  DateParts,
+  DateOffset,
+} from "./core/types/temporal";
 
-export * from "./core/base";
-export * from "./schemas/boolean";
-export * from "./schemas/number";
-export * from "./schemas/string";
-export * from "./schemas/date";
-export * from "./schemas/enum";
-export * from "./schemas/native_enum";
-export * from "./schemas/object";
-export * from "./schemas/union";
+export { BaseValidator, OptionalValidator } from "./core/base";
+export { BooleanValidator } from "./schemas/boolean";
+export { NumberValidator } from "./schemas/number";
+export { StringValidator } from "./schemas/string";
+export { DateValidator } from "./schemas/date";
+export { EnumValidator } from "./schemas/enum";
+export { NativeEnumValidator } from "./schemas/native_enum";
+export { ObjectValidator } from "./schemas/object";
+export { UnionValidator } from "./schemas/union";
 
 import { BaseValidator } from "./core/base";
 import { BooleanValidator } from "./schemas/boolean";
