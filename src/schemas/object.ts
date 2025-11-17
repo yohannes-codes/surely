@@ -10,6 +10,7 @@ export class ObjectValidator<
   _type!: T;
   private _schema: { [K in keyof T]: BaseValidator<T[K]> };
   private _allowExtraKeys = false;
+  private _stripUnknown = false;
 
   constructor(schema: { [K in keyof T]: BaseValidator<T[K]> }) {
     super();
@@ -27,15 +28,9 @@ export class ObjectValidator<
     return Object.keys(this._schema) as (keyof T)[];
   }
 
-  loose(): this {
-    this._allowExtraKeys = true;
-    return this;
-  }
-
-  strict(): this {
-    this._allowExtraKeys = false;
-    return this;
-  }
+  loose = (): this => ((this._allowExtraKeys = true), this);
+  strict = (): this => ((this._allowExtraKeys = false), this);
+  strip = (): this => ((this._stripUnknown = true), this);
 
   pick<K extends keyof T>(keys: K[]): ObjectValidator<Pick<T, K>> {
     const picked = {} as { [P in K]: BaseValidator<T[P]> };
@@ -87,7 +82,7 @@ export class ObjectValidator<
       (k) => !this.schemaKeys.includes(k as keyof T)
     );
 
-    if (extraKeys.length) {
+    if (extraKeys.length && !this._stripUnknown) {
       if (this._allowExtraKeys) {
         for (const k of extraKeys) output[k] = obj[k];
       } else {

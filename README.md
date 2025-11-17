@@ -307,6 +307,7 @@ surely.object<User>(schema: {
 - `.getSchemaKeys()` — returns the keys of the object schema.
 - `.loose()` — allows extra properties not defined in the schema.
 - `.strict()` — disallows extra properties not defined in the schema **& is the default behavior**.
+- `.strip()` — removes extra properties not defined in the schema. regardless of loose/strict mode.
 - `.asPartial()` — makes all properties optional.
 - `.pick<K extends keyof T>(...keys: K[])` — creates a new schema with only the specified keys.
 - `.omit<K extends keyof T>(...keys: K[])` — creates a new schema without the specified keys.
