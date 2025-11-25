@@ -15,11 +15,10 @@ export class ObjectValidator<
   constructor(schema: { [K in keyof T]: BaseValidator<T[K]> }) {
     super();
 
-    if (Object.values(schema).some((v) => !(v instanceof BaseValidator))) {
+    if (Object.values(schema).some((v) => !(v instanceof BaseValidator)))
       throw new Error(
         "[Invalid schema] Expected valid BaseValidator instances in schema."
       );
-    }
 
     this._schema = schema;
   }
@@ -31,6 +30,19 @@ export class ObjectValidator<
   loose = (): this => ((this._allowExtraKeys = true), this);
   strict = (): this => ((this._allowExtraKeys = false), this);
   strip = (): this => ((this._stripUnknown = true), this);
+
+  extend<U extends Record<string, BaseValidator<any>>>(
+    extension: U
+  ): ObjectValidator<
+    T & {
+      [K in keyof U]: U[K] extends BaseValidator<infer V> ? V : never;
+    }
+  > {
+    return new ObjectValidator({
+      ...this._schema,
+      ...extension,
+    }) as any;
+  }
 
   pick<K extends keyof T>(keys: K[]): ObjectValidator<Pick<T, K>> {
     const picked = {} as { [P in K]: BaseValidator<T[P]> };
