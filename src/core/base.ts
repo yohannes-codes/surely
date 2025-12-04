@@ -58,7 +58,7 @@ export abstract class BaseValidator<T> {
     return respond.success(output);
   }
 
-  parseAnArray(input: any[], path: string = ""): SurelyResult<T[]> {
+  parseAnArray(input: any, path: string = ""): SurelyResult<T[]> {
     if (!Array.isArray(input)) return respond.error.type("array", path, input);
 
     const output: T[] = [];

@@ -1,6 +1,6 @@
 {
   "name": "@yohannes.codes/surely",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "type": "module",
   "description": "Surely — a modern, lightweight TypeScript validation library for building expressive, type-safe schemas with zero runtime dependencies.",
   "main": "./dist/index.js",
