@@ -19,6 +19,7 @@ export { EnumValidator } from "./schemas/enum";
 export { NativeEnumValidator } from "./schemas/native_enum";
 export { ObjectValidator } from "./schemas/object";
 export { UnionValidator } from "./schemas/union";
+export { TupleValidator } from "./schemas/tuple";
 
 import { BaseValidator } from "./core/base";
 import { BooleanValidator } from "./schemas/boolean";
@@ -29,6 +30,7 @@ import { EnumValidator } from "./schemas/enum";
 import { NativeEnumValidator } from "./schemas/native_enum";
 import { ObjectValidator } from "./schemas/object";
 import { UnionValidator } from "./schemas/union";
+import { TupleValidator } from "./schemas/tuple";
 
 export const surely = {
   boolean: () => new BooleanValidator(),
@@ -53,6 +55,9 @@ export const surely = {
     }>(schema),
   union: <T extends readonly BaseValidator<any>[]>(validators: T) =>
     new UnionValidator(validators),
+
+  tuple: <T extends readonly BaseValidator<any>[]>(items: T) =>
+    new TupleValidator(items),
 };
 
 export const S = surely;
